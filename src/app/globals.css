@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card:       var(--card);
+  --color-border:     var(--border);
+  --color-primary:    var(--primary);
+  --color-muted:      var(--muted);
+  --color-muted-foreground: var(--muted-fg);
+  --color-sidebar:    var(--sidebar);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --radius: 0.625rem;
+  --bg:       #f0f7ff;
+  --fg:       #0c1a2e;
+  --card:     #ffffff;
+  --border:   #bfdbfe;
+  --input:    #eff6ff;
+  --muted:    #dbeafe;
+  --muted-fg: #4b6a8f;
+  --sidebar:  #0c3460;
+  --primary:  #0284c7;
+  --accent-clr: #16a34a;
+  --chart-1: #2878d6;
+  --chart-2: #16a34a;
+  --chart-3: #d97706;
+  --chart-4: #dc2626;
+  --chart-5: #7dd3fc;
+  --chart-6: #6366f1;
+}
+
+* { border-color: var(--border); box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+.card-hover { transition: box-shadow 0.15s, border-color 0.15s; }
+.card-hover:hover {
+  box-shadow: 0 4px 20px color-mix(in oklch, var(--primary) 15%, transparent);
+  border-color: color-mix(in oklch, var(--primary) 40%, transparent);
+}
+/* PRINT-START */
+/* ── Report frame + Print / Save-as-PDF ────────────────────────────
+   Every report is wrapped in <ReportFrame>: a one-column table whose
+   <thead> is the logo/title header and whose <tbody> is the report. On
+   screen it just reads as a header above the content. In print, browsers
+   repeat a table's <thead> at the top of every page, which is how all the
+   logos and the title land on EVERY page of a multi-page report. */
+.report-frame { width: 100%; table-layout: fixed; border-collapse: collapse; border-spacing: 0; }
+.report-frame > thead > tr > td,
+.report-frame > tbody > tr > td { padding: 0; vertical-align: top; }
+.report-frame-head { padding-bottom: 16px !important; border-bottom: 1px solid #bfdbfe; }
+.report-frame-gap  { height: 16px; }
+
+/* The app shell is a fixed-height, internally-scrolling layout (h-screen +
+   overflow-y-auto) — right on screen, but in print it clips everything past
+   the first viewport-height of content: a long report printed as ONE page
+   with the rest silently cut off (measured with a real print engine: a
+   150-row report printed 1 page, ~25 rows). The overrides below let it flow
+   across as many pages as it needs. */
+@page report { size: A4; margin: 12mm; }
+
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+
+  html, body { height: auto !important; overflow: visible !important; }
+  .app-shell, .app-content, .app-main {
+    display: block !important; height: auto !important; overflow: visible !important;
+  }
+  .app-main { padding: 0 !important; }
+  .app-sidebar { display: none !important; }
+  body:has(.report-frame) { page: report; }
+
+  /* Keep rows of the report's own tables intact across page breaks — but
+     NOT the frame itself, whose single body row holds the whole report. */
+  table:not(.report-frame) tr { break-inside: avoid; }
+  table:not(.report-frame) thead { display: table-header-group; }
+  table:not(.report-frame) tfoot { display: table-footer-group; }
+}
+/* PRINT-END */
